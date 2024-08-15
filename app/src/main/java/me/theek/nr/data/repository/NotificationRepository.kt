@@ -1,8 +1,13 @@
 package me.theek.nr.data.repository
 
+import android.content.Context
+import androidx.core.app.NotificationManagerCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.theek.nr.data.local.dao.NotificationDao
@@ -13,7 +18,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NotificationRepository @Inject constructor(private val notificationDao: NotificationDao) {
+class NotificationRepository @Inject constructor(
+    private val notificationDao: NotificationDao,
+    @ApplicationContext private val context: Context
+) {
+
+    fun checkNotificationListenerPermission(): Flow<Boolean> {
+        val grantedApps = NotificationManagerCompat.getEnabledListenerPackages(context)
+        return flow {
+            delay(3000)
+            emit(grantedApps.contains(context.packageName))
+        }
+    }
 
     fun addPostNotification(postNotification: PostNotification) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -31,6 +47,12 @@ class NotificationRepository @Inject constructor(private val notificationDao: No
                     it.toPostNotification()
                 }
             }
+    }
+
+    fun getNotificationById(id: Int): Flow<PostNotification> {
+        return notificationDao
+            .getNotificationById(id = id)
+            .map { it.toPostNotification() }
     }
 
 }

@@ -15,4 +15,7 @@ interface NotificationDao {
 
     @Query("SELECT * FROM post_notifications")
     fun getAllNotifications(): Flow<List<NotificationEntity>>
+
+    @Query("SELECT * FROM post_notifications WHERE id = :id")
+    fun getNotificationById(id: Int): Flow<NotificationEntity>
 }

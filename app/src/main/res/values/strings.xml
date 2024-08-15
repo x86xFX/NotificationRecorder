@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">NotificationRecorder</string>
     <string name="settings_icon">settings icon</string>
+    <string name="app_icon">app icon</string>
+    <string name="notification_app_icon">notification app icon</string>
+    <string name="notification_icon">notification icon</string>
+    <string name="date_range">Date range</string>
+    <string name="navigate_back">Navigate back</string>
+    <string name="sender_s_image">sender\'s image</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="go_back">Go back</string>
+    <string name="checking_required_permissions">Checking required permissions…</string>
 </resources>

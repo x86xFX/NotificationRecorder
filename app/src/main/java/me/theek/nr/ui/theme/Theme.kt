@@ -1,6 +1,7 @@
 package me.theek.nr.ui.theme
 
-import android.app.Activity
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -33,10 +34,14 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+fun Context.isInDarkMode() : Boolean {
+    return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+}
+
+
 @Composable
 fun NotificationRecorderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
