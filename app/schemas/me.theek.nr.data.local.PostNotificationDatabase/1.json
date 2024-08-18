@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9d4f1bcb6d6f88855197164be4ce3718",
+    "identityHash": "f5408d3d731708c2d5ec9a2ab48a88c3",
     "entities": [
       {
         "tableName": "post_notifications",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `notification_title` TEXT, `notification_content` TEXT, `notification_sender` TEXT, `app_package_name` TEXT, `notification_received_at` INTEGER, `notification_small_icon_base64_string` TEXT, `notification_color_code` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `notification_title` TEXT, `notification_content` TEXT, `notification_sender` TEXT, `app_name` TEXT, `app_package_name` TEXT, `app_icon` BLOB, `notification_small_icon` BLOB, `notification_color_code` INTEGER, `notification_received_at` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -33,26 +33,38 @@
             "notNull": false
           },
           {
+            "fieldPath": "appName",
+            "columnName": "app_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "packageName",
             "columnName": "app_package_name",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "receivedTime",
-            "columnName": "notification_received_at",
-            "affinity": "INTEGER",
+            "fieldPath": "appIcon",
+            "columnName": "app_icon",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
-            "fieldPath": "appIconBase64String",
-            "columnName": "notification_small_icon_base64_string",
-            "affinity": "TEXT",
+            "fieldPath": "notificationIcon",
+            "columnName": "notification_small_icon",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
             "fieldPath": "colorCode",
             "columnName": "notification_color_code",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "receivedTime",
+            "columnName": "notification_received_at",
             "affinity": "INTEGER",
             "notNull": false
           }
@@ -70,7 +82,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9d4f1bcb6d6f88855197164be4ce3718')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f5408d3d731708c2d5ec9a2ab48a88c3')"
     ]
   }
 }

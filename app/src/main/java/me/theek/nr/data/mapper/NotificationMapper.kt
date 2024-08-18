@@ -10,8 +10,10 @@ fun NotificationEntity.toPostNotification() : PostNotification {
         content = content,
         sender = sender,
         packageName = packageName,
+        appName = appName,
         receivedTime = receivedTime,
-        appIconBase64String = appIconBase64String,
+        appIcon = appIcon,
+        notificationIcon = notificationIcon,
         colorCode = colorCode
     )
 }
@@ -22,8 +24,10 @@ fun PostNotification.toNotificationEntity() : NotificationEntity {
         content = content,
         sender = sender,
         packageName = packageName,
+        appName = appName,
         receivedTime = receivedTime,
-        appIconBase64String = appIconBase64String,
+        appIcon = appIcon,
+        notificationIcon = notificationIcon,
         colorCode = colorCode
     )
 }

@@ -83,12 +83,7 @@ fun NotificationScreen(
                             key = { it.id }
                         ) { notification ->
                             NotificationDetailsItem(
-                                id = notification.id,
-                                title = notification.title,
-                                description = notification.content,
-                                time = notification.receivedTime,
-                                appIconBase64String = notification.appIconBase64String,
-                                colorCode = notification.colorCode,
+                                postNotification = notification,
                                 onNotificationClicked = onNotificationClicked
                             )
                         }

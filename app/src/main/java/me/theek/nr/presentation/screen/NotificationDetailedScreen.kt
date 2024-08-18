@@ -52,10 +52,8 @@ import me.theek.nr.R
 import me.theek.nr.presentation.viewmodel.NotificationDetailedViewModel
 import me.theek.nr.presentation.viewmodel.UiState
 import me.theek.nr.ui.theme.NotificationRecorderTheme
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalEncodingApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationDetailedScreen(
     notificationId: Int?,
@@ -89,11 +87,6 @@ fun NotificationDetailedScreen(
             }
             is UiState.Success -> {
                 val postNotification = (uiState as UiState.Success).postNotification
-                val imageByteArray = if (postNotification.appIconBase64String == null) {
-                    null
-                } else {
-                    Base64.decode(postNotification.appIconBase64String)
-                }
 
                 Scaffold(
                     modifier = Modifier
@@ -153,7 +146,7 @@ fun NotificationDetailedScreen(
                                     modifier = Modifier
                                         .clip(CircleShape)
                                         .size(100.dp),
-                                    painter = painterResource(id = R.drawable.img_dilara),
+                                    painter = painterResource(id = R.drawable.ic_launcher_background),
                                     contentDescription = stringResource(R.string.sender_s_image)
                                 )
                                 Column(
@@ -223,7 +216,7 @@ fun NotificationDetailedScreen(
                                     ) {
                                         AsyncImage(
                                             model = ImageRequest.Builder(LocalContext.current)
-                                                .data(imageByteArray)
+                                                .data(postNotification.notificationIcon)
                                                 .build(),
                                             contentDescription = stringResource(R.string.notification_app_icon),
                                             colorFilter = ColorFilter.tint(if (postNotification.colorCode == null) MaterialTheme.colorScheme.onBackground else Color(postNotification.colorCode)),

@@ -2,13 +2,14 @@ package me.theek.nr.presentation.screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,27 +29,18 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.theek.nr.R
+import me.theek.nr.domain.PostNotification
 import me.theek.nr.ui.theme.NotificationRecorderTheme
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
+import java.text.SimpleDateFormat
+import java.util.Date
 
-@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun NotificationDetailsItem(
-    id: Int,
-    title: String?,
-    description: String?,
-    time: Long?,
-    appIconBase64String: String?,
-    colorCode: Int?,
+    postNotification: PostNotification,
     onNotificationClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val imageByteArray = if (appIconBase64String == null) {
-        null
-    } else {
-        Base64.decode(appIconBase64String)
-    }
+    val themedColor = if (postNotification.colorCode == null) MaterialTheme.colorScheme.onBackground else Color(postNotification.colorCode)
 
     Row(
         modifier = modifier
@@ -59,57 +51,114 @@ fun NotificationDetailsItem(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = themedColor,
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(MaterialTheme.colorScheme.background)
-            .clickable { onNotificationClicked(id) }
-            .padding(10.dp),
+            .background(MaterialTheme.colorScheme.background),
+//            .clickable { onNotificationClicked(id) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imageByteArray)
-                .build(),
-            contentDescription = stringResource(R.string.notification_app_icon),
-            contentScale = ContentScale.Crop,
-            colorFilter = ColorFilter.tint(if (colorCode == null) MaterialTheme.colorScheme.onBackground else Color(colorCode)),
-            modifier = Modifier
-                .size(25.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
-
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = title ?: "Unknown",
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onBackground,
-                overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize
-            )
-
-            Text(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                text = description ?: "Unknown",
-                color = MaterialTheme.colorScheme.onBackground,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                softWrap = true
-            )
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    text = postNotification.sender ?: "Unknown sender",
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Row(
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 12.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 12.dp
+                            )
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = themedColor,
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 12.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 12.dp
+                            )
+                        )
+                        .padding(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = 5.dp,
+                        alignment = Alignment.CenterHorizontally
+                    )
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(postNotification.notificationIcon)
+                            .build(),
+                        contentDescription = stringResource(R.string.notification_app_icon),
+                        contentScale = ContentScale.Crop,
+                        colorFilter = ColorFilter.tint(themedColor),
+                        modifier = Modifier
+                            .size(25.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
 
-            Text(
-                text = time?.toString() ?: "Unknown",
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onBackground,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = MaterialTheme.typography.labelSmall.fontSize
-            )
+                    Text(
+                        text = postNotification.appName ?: "Unknown",
+                        color = themedColor
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                Text(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    text = postNotification.title ?: "Unknown",
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = postNotification.content ?: "Unknown",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    softWrap = true
+                )
+
+                Text(
+                    text = postNotification.receivedTime?.toReadableTimeFormat() ?: "Unknown",
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize
+                )
+            }
         }
+    }
+}
+
+private fun Long?.toReadableTimeFormat(): String? {
+    return if (this == null) {
+        null
+    } else {
+        return SimpleDateFormat.getDateTimeInstance().format(Date(this))
     }
 }
 
@@ -118,12 +167,18 @@ fun NotificationDetailsItem(
 private fun NotificationDetailsItemPreview() {
     NotificationRecorderTheme {
         NotificationDetailsItem(
-            id = 1,
-            title = "Dilara sent a message",
-            description = "Kala enna epai ithin. Udeta hari kaewada? Oka iwara wenne kiyata da danneth na",
-            time = 342342643,
-            appIconBase64String = null,
-            colorCode = null,
+            postNotification = PostNotification(
+                id = 1,
+                title = "XYZ sent a message",
+                sender = "XYZ",
+                content = "Android is a mobile operating system based on a modified version of the Linux kernel and other open-source software, designed primarily for touchscreen mobile devices such as smartphones and tablets.",
+                receivedTime = 342342643,
+                notificationIcon = null,
+                appIcon = null,
+                colorCode = null,
+                appName = "Whatsapp",
+                packageName = "com.whatsapp"
+            ),
             onNotificationClicked = {}
         )
     }
